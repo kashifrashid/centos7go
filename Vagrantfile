@@ -1,11 +1,51 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+$script = <<SCRIPT
+  echo "Installing Docker..."
+  if [[ -f /etc/apt/sources.list.d/docker.list ]]; then
+      echo "Docker repository already installed; Skipping"
+  else
+      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+      sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+      sudo apt-get update
+  fi
+  sudo DEBIAN_FRONTEND=noninteractive apt-get install -y docker-ce
+
+  # Restart docker to make sure we get the latest version of the daemon if there is an upgrade
+  sudo service docker restart
+
+  # Make sure we can actually use docker as the vagrant user
+  sudo usermod -aG docker vagrant
+
+  sudo apt-get install -y unzip git lsof sysdig python-pip
+  sudo pip install awscli
+  sudo pip install ansible
+  
+  wget https://releases.hashicorp.com/packer/1.1.3/packer_1.1.3_linux_amd64.zip
+  wget https://releases.hashicorp.com/terraform/0.11.1/terraform_0.11.1_linux_amd64.zip
+  unzip packer_1.1.3_linux_amd64.zip
+  unzip terraform_0.11.1_linux_amd64.zip
+  sudo mv packer /usr/local/bin/packer
+  sudo  mv terraform /usr/local/bin/terraform
+  rm *.zip
+
+SCRIPT
+
+
 Vagrant.configure("2") do |config|
   
   config.vm.box = "centos/7"
   
+  config.vm.define "manage" do |m|
+    m.vm.box = "ubuntu/xenial64"
+    m.vm.network :private_network, ip: "10.0.0.40"
+    m.vm.hostname = 'manage'
+    m.vm.provision "shell", inline: $script, privileged: false
+  end 
+  
   config.vm.define "web" do |web|
+  
     web.vm.network :private_network, ip: "10.0.0.10"
     web.vm.network "forwarded_port", guest: 80, host: 8080
     web.vm.hostname = 'webserver'
@@ -21,26 +61,15 @@ Vagrant.configure("2") do |config|
     SHELL
 
   end 
+
   config.vm.define "str" do |str|
     str.vm.network :private_network, ip: "10.0.0.20"
     str.vm.hostname = 'strServer'
-    # str.vm.provision "shell", inline: <<-SHELL
-    #   yum install -y epel-release 
-    #   yum update -y
-    #   yum install -y wget unzip git
-    #   curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
-    #   python get-pip.py
-    #   pip install awscli
-    #   pip install ansible
-    #   wget https://releases.hashicorp.com/packer/1.1.3/packer_1.1.3_linux_amd64.zip
-    #   wget https://releases.hashicorp.com/terraform/0.11.1/terraform_0.11.1_linux_amd64.zip
-    #   unzip packer_1.1.3_linux_amd64.zip
-    #   unzip terraform_0.11.1_linux_amd64.zip
-    #   mv packer /usr/local/bin/packer
-    #   mv terraform /usr/local/bin/terraform
-    #   rm *.zip
-    #   echo "10.0.0.30  db.local" >> /etc/hosts 
-    # SHELL
+    str.vm.provision "shell", inline: <<-SHELL
+      yum install -y epel-release 
+      yum update -y
+      echo "10.0.0.30  db.local" >> /etc/hosts 
+    SHELL
     str.vm.provision "shell", path: "go_install.sh"
   end
   config.vm.define "db" do |db|
