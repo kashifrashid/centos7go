@@ -86,6 +86,18 @@ Vagrant.configure("2") do |config|
      SHELL
   end
   
+  config.vm.define "influxdb" do |idb|
+    idb.vm.network :private_network, ip: "10.0.0.32"
+    idb.vm.hostname = 'dbserver'
+    idb.vm.provision "shell", inline: <<-SHELL
+      yum install -y epel-release 
+      yum update -y
+      cp /vagrant/influx.repo /etc/yum.repos.d/influxdb.repo
+      yum install influxdb -y
+      systemctl start influxdb 
+    SHELL
+
+ end
 
   # config.vm.synced_folder "../data", "/vagrant_data"
 
