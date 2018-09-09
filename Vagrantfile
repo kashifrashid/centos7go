@@ -2,6 +2,8 @@
 # vi: set ft=ruby :
 
 $script = <<SCRIPT
+  apt update
+  apt upgrade -y 
   echo "Installing Docker..."
   if [[ -f /etc/apt/sources.list.d/docker.list ]]; then
       echo "Docker repository already installed; Skipping"
@@ -29,7 +31,7 @@ $script = <<SCRIPT
   sudo mv packer /usr/local/bin/packer
   sudo  mv terraform /usr/local/bin/terraform
   rm *.zip
-
+  
 SCRIPT
 
 
