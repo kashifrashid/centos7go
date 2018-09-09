@@ -31,9 +31,19 @@ $script = <<SCRIPT
   sudo mv packer /usr/local/bin/packer
   sudo  mv terraform /usr/local/bin/terraform
   rm *.zip
-  
+  wget https://az764295.vo.msecnd.net/stable/5944e81f3c46a3938a82c701f96d7a59b074cfdc/code_1.27.1-1536226049_amd64.deb
+  sudo dpkg -i code_1.27.1-1536226049_amd64.deb
+  rm -f code_1.27.1-1536226049_amd64.deb
 SCRIPT
 
+$vscode = <<VSCODE
+  curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg
+  sudo install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/
+  sudo sh -c 'echo "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" > /etc/apt/sources.list.d/vscode.list'
+  sudo apt-get install apt-transport-https
+  sudo apt-get update
+  sudo apt-get install code # or code-insiders
+VSCODE
 
 Vagrant.configure("2") do |config|
   
@@ -44,6 +54,7 @@ Vagrant.configure("2") do |config|
     m.vm.network :private_network, ip: "192.168.10.10"
     m.vm.hostname = 'manage'
     m.vm.provision "shell", inline: $script, privileged: false
+    m.vm.provision "shell", inline: $vscode, privileged: false
   end 
   
   config.vm.define "web" do |web|
