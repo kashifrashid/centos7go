@@ -34,16 +34,16 @@ module "ba_security_group" {
   egress_rules        = ["all-all"]
 }
 
-module "ht_security_group" {
-  source = "terraform-aws-modules/security-group/aws"
-  name        = "http"
-  description = "http from anywhere"
-  vpc_id      = "${module.vpc.vpc_id}"
+# module "ht_security_group" {
+#   source = "terraform-aws-modules/security-group/aws"
+#   name        = "http"
+#   description = "http from anywhere"
+#   vpc_id      = "${module.vpc.vpc_id}"
 
-  ingress_cidr_blocks = ["0.0.0.0/0"]
-  ingress_rules       = ["http-tcp","all-icmp"]
-  egress_rules        = ["all-all"]
-}
+#   ingress_cidr_blocks = ["0.0.0.0/0"]
+#   ingress_rules       = ["http-tcp","all-icmp"]
+#   egress_rules        = ["all-all"]
+# }
 
 
 
@@ -84,7 +84,7 @@ module "ec2" {
 
 # ######
 # # ELB
-# ######
+# # ######
 # module "http_elb" {
 #   source  = "terraform-aws-modules/elb/aws"
 #   version = "1.4.1"
@@ -137,46 +137,45 @@ module "ec2" {
 # }
 
 
-module "elb" {
-  source = "terraform-aws-modules/elb/aws"
+# module "elb" {
+#   source = "./modules/elb/"
+#   name = "elb-example"
 
-  name = "elb-example"
+#   subnets         = ["subnet-12345678", "subnet-87654321"]
+#   security_groups = ["sg-12345678"]
+#   internal        = false
 
-  subnets         = ["subnet-12345678", "subnet-87654321"]
-  security_groups = ["sg-12345678"]
-  internal        = false
+#   listener = [
+#     {
+#       instance_port     = "80"
+#       instance_protocol = "HTTP"
+#       lb_port           = "80"
+#       lb_protocol       = "HTTP"
+#     },
+#   ]
 
-  listener = [
-    {
-      instance_port     = "80"
-      instance_protocol = "HTTP"
-      lb_port           = "80"
-      lb_protocol       = "HTTP"
-    },
-  ]
+#   health_check = [
+#     {
+#       target              = "HTTP:80/"
+#       interval            = 30
+#       healthy_threshold   = 2
+#       unhealthy_threshold = 2
+#       timeout             = 5
+#     },
+#   ]
 
-  health_check = [
-    {
-      target              = "HTTP:80/"
-      interval            = 30
-      healthy_threshold   = 2
-      unhealthy_threshold = 2
-      timeout             = 5
-    },
-  ]
+#   access_logs = [
+#     {
+#       bucket = "my-access-logs-bucket"
+#     },
+#   ]
 
-  access_logs = [
-    {
-      bucket = "my-access-logs-bucket"
-    },
-  ]
+#   // ELB attachments
+#   number_of_instances = 1
+#   instances           = ["${module.ec2_instances.id}"]
 
-  // ELB attachments
-  number_of_instances = 1
-  instances           = ["${module.ec2_instances.id}"]
-
-  tags = {
-    Owner       = "user"
-    Environment = "dev"
-  }
-}
+#   tags = {
+#     Owner       = "user"
+#     Environment = "dev"
+#   }
+# }
