@@ -39,9 +39,9 @@ Vagrant.configure("2") do |config|
   
   config.vm.box = "centos/7"
   
-  config.vm.define "manage" do |m|
-    m.vm.box = "ubuntu/xenial64"
-    m.vm.network :private_network, ip: "10.0.0.40"
+  config.vm.define "man" do |m|
+    m.vm.box = "pristine/ubuntu-budgie-18-x64"
+    m.vm.network :private_network, ip: "192.168.10.10"
     m.vm.hostname = 'manage'
     m.vm.provision "shell", inline: $script, privileged: false
   end 
