@@ -4,6 +4,7 @@
 $script = <<SCRIPT
   apt update
   apt upgrade -y 
+
   echo "Installing Docker..."
   if [[ -f /etc/apt/sources.list.d/docker.list ]]; then
       echo "Docker repository already installed; Skipping"
@@ -25,15 +26,12 @@ $script = <<SCRIPT
   sudo pip install ansible
   
   wget https://releases.hashicorp.com/packer/1.1.3/packer_1.1.3_linux_amd64.zip
-  wget https://releases.hashicorp.com/terraform/0.11.1/terraform_0.11.1_linux_amd64.zip
+  wget https://releases.hashicorp.com/terraform/0.11.8/terraform_0.11.8_linux_amd64.zip
   unzip packer_1.1.3_linux_amd64.zip
-  unzip terraform_0.11.1_linux_amd64.zip
+  unzip terraform_0.11.8_linux_amd64.zip
   sudo mv packer /usr/local/bin/packer
   sudo  mv terraform /usr/local/bin/terraform
   rm *.zip
-  wget https://az764295.vo.msecnd.net/stable/5944e81f3c46a3938a82c701f96d7a59b074cfdc/code_1.27.1-1536226049_amd64.deb
-  sudo dpkg -i code_1.27.1-1536226049_amd64.deb
-  rm -f code_1.27.1-1536226049_amd64.deb
 SCRIPT
 
 $vscode = <<VSCODE
@@ -50,7 +48,7 @@ Vagrant.configure("2") do |config|
   config.vm.box = "centos/7"
   
   config.vm.define "man" do |m|
-    m.vm.box = "generic/ubuntu1804"
+    m.vm.box = "ubuntu/xenial64"
     m.vm.network :private_network, ip: "192.168.10.10"
     m.vm.hostname = 'manage'
     m.vm.provision "shell", inline: $script, privileged: false

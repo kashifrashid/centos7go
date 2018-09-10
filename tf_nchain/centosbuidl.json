@@ -1,0 +1,20 @@
+{
+    "variables": {
+      "aws_access_key": "",
+      "aws_secret_key": ""
+    },
+    "builders": [{
+        "type": "amazon-ebs",
+        "region": "eu-west-2",
+        "source_ami": "ami-00846a67",
+        "instance_type": "t2.micro",
+        "ssh_username": "centos",
+        "ami_name": "centos7_{{timestamp}}"
+    }],
+    "provisioners": [
+        {
+          "type": "shell",
+          "script": "userdata.sh"
+        }
+      ]
+}
