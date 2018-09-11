@@ -4,7 +4,7 @@
 
 variable "cidr_begin" {
 	type ="string"
-  default = "172.16"
+  default = "10.16"
 }
 
 variable "ami_id" {
@@ -25,9 +25,10 @@ variable "key_name" {
 }
 
 variable "stratum_instance_count" {
-   default =  1
+   default =  2
 }
 
+# influlxdb instance 
 variable "influxdb_instance_count" {
   default = 2
 }
@@ -41,4 +42,39 @@ variable "data_disk_iops" {
 
 variable "disk_device_name" {
   default = "/dev/xvdh"
+}
+
+# Postgres  instance info
+
+variable "postgres_instance_count" {
+  default = 2
+}
+
+variable "maestro_instance_count" {
+  default = 2
+}
+
+variable "dashboard_instance_count" {
+  default = 2
+}
+
+variable "monitoring_instance_count" {
+  default = 2
+}
+
+variable "logging_instance_count" {
+  default = 2
+}
+
+variable "jdispacher_instance_count" {
+  default = 4  
+}
+
+variable "bitcoin_sv_instance_count" {
+  default = 2
+}
+
+variable "list_ips_public" {
+  type = "list"
+  default = ["213.1.222.235/32"]
 }

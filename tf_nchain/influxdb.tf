@@ -1,8 +1,8 @@
 
 module "influxdb_security_group" {
   source = "terraform-aws-modules/security-group/aws"
-  name        = "stratun_sg"
-  description = "stratun  from within vpc"
+  name        = "influxdb_sg"
+  description = "influxdb from within vpc"
   vpc_id      = "${module.vpc.vpc_id}"
 
   ingress_cidr_blocks = ["${module.vpc.vpc_cidr_block}"]
@@ -24,6 +24,7 @@ module "influxdb_security_group" {
     }, 
   ]
   egress_rules        = ["all-all"]
+  create = "${var.influxdb_instance_count == 0 ? false : true }"
 }
 
 
@@ -57,7 +58,7 @@ resource "aws_ebs_volume" "influxdb_vol" {
     size              = "${var.inflixdb_disk_sze}"
     encrypted         = true
     type              = "io1"
-    iops              = "100"
+    iops              = "${var.data_disk_iops}"
     availability_zone = "${var.aws_region}a"
     count             = "${var.influxdb_instance_count}"
  
@@ -67,7 +68,7 @@ resource "aws_ebs_volume" "influxdb_vol" {
 }
 
 
-resource "aws_volume_attachment" "influxdb_col_attach" {
+resource "aws_volume_attachment" "influxdb_vol_attach" {
     device_name = "${var.disk_device_name}"
     volume_id   = "${aws_ebs_volume.influxdb_vol.*.id[count.index]}"
     instance_id = "${module.ec2_influxdb.id[count.index]}"
